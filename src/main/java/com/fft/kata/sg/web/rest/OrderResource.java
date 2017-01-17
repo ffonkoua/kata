@@ -11,6 +11,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 import com.fft.kata.sg.dao.BanqueDAO;
 import com.fft.kata.sg.dao.entity.Ordre;
@@ -24,22 +25,22 @@ import com.fft.kata.sg.dao.impl.BanqueDAOImpl;
  */
 @Path("order")
 @Produces({"text/plain", "application/xml", "application/json"})
-@Consumes({"text/plain", "application/xml", "application/json"})
+@Consumes({"application/json;charset=UTF-8"})
 public class OrderResource {
 	public static BanqueDAO banqueDAO = new BanqueDAOImpl();
 	
 	@GET
     @Path("{numeroCompte}")
-    public List<Ordre> listerOdres(@PathParam("numeroCompte") String numeroCompte){
+    public Response listerOdres(@PathParam("numeroCompte") String numeroCompte){
 		List<Ordre> listOrdres = banqueDAO.listerOrdres(numeroCompte);
-		return listOrdres;
+		return Response.status(200).entity(listOrdres).build();
     }
 	
 	@POST
 	@Path("{type}/{montant}/{numeroCompte}/{clientId}")
-	public Ordre enregistrer(@PathParam("type") String type, @PathParam("montant") long montant, @PathParam("numeroCompte") String numeroCompte, @PathParam("type") long clientId) throws BanqueException{
+	public Response enregistrer(@PathParam("type") String type, @PathParam("montant") long montant, @PathParam("numeroCompte") String numeroCompte, @PathParam("type") long clientId) throws BanqueException{
 		EnumTypeOrdre EnumType = Enum.valueOf(EnumTypeOrdre.class, type);
 		Ordre ordre = banqueDAO.enregistrerOrdre(EnumType, montant, numeroCompte, clientId);
-		return ordre;
+		return Response.status(200).entity(ordre).build();
 	}
 }
